@@ -122,12 +122,12 @@ FROM scores
 
 SELECT *  
 FROM (  
-  SELECT   
-    measured_at AS today,   
-    LEAD(measured_at, 1) OVER(ORDER BY measured_at) AS next_day,   
-    pm10,   
-    LEAD(pm10, 1) OVER(ORDER BY measured_at) AS next_pm10  
-  FROM measurements  
+    SELECT   
+        measured_at AS today,   
+        LEAD(measured_at, 1) OVER(ORDER BY measured_at) AS next_day,   
+        pm10,   
+        LEAD(pm10, 1) OVER(ORDER BY measured_at) AS next_pm10  
+    FROM measurements  
 ) AS sub  
 WHERE next_pm10 > pm10
 
@@ -139,11 +139,11 @@ join_table AS (
     JOIN member_profile mp ON rr.member_id = mp.member_id  
 ),  
 ranked AS (  
-  SELECT   
-    member_name,  
-    DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS rk  
-  FROM join_table  
-  GROUP BY member_name  
+    SELECT   
+        member_name,  
+        DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS rk  
+    FROM join_table  
+    GROUP BY member_name  
 )  
 
 SELECT   
