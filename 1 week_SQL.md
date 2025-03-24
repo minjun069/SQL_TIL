@@ -1,6 +1,6 @@
-1. 주요 개념 정리 - 윈도우 함수 Window Functions
+# 1. 주요 개념 정리 - 윈도우 함수 Window Functions
 
-##14.20.2. Window Function Concepts and Syntax  
+## 14.20.2. Window Function Concepts and Syntax  
 윈도우 함수: 한 행을 기준으로 그 주변의 다른 행들과 함께 계산하는 함수  
 -모든 행을 유지하면서 기준 행과 주변 행들을 연산하는 작업을 할 수 있게 해주는 함수  
 -일반적인 통합 연산은 하나의 행을 결과로 내는 반면, 윈도우 함수는 각 행에 대응하는 결과를 낸다.  
@@ -32,7 +32,7 @@ WINDOW window_name AS (window spec) 로 윈도우 정의
 ex 허용되는 경우: WINDOW w1 AS (w2), w2 AS (), w3 AS (w1)  
 ex 허용되지 않는 경우: WINDOW w1 AS (w2), w2 AS (w3), w3 AS (w1)
 
-##14.20.1. Window Function Descriptions (nonaggregate window functions)  
+## 14.20.1. Window Function Descriptions (nonaggregate window functions)  
 -null_treatment: NULL 값을 처리하는 방식 지정. 옵션사항 (RESPECT NULLS, IGNORE NULLS)
 
 1) CUME DIST() *over_clause*  
@@ -73,7 +73,7 @@ WINDOW w AS (ORDER BY t);
 -ORDER BY와 함께 사용되어야 한다.
 
 
-##14.19.1. Aggregate Function Descriptions  
+## 14.19.1. Aggregate Function Descriptions  
 -집계 함수는 주로 GROUP BY와 함께 사용된다.  
 -GROUP BY를 사용하지 않을 경우, 모든 행에 대해 연산한다.  
 -따로 명시되지 않은 한, 집계 함수는 NULL값을 무시한다.
@@ -111,45 +111,46 @@ JSON OBJECTAGG(key_col, value_col): 두 열의 값들을 하나의 쌍으로 묶
 -key-value 순서 정렬을 위해 OVER(ORDER BY key or value)를 사용할 수 있다.
 
 
-2. 문제 풀이
+# 2. 문제 풀이
+
 - 🔗 [LeetCode - Rank Scores](https://leetcode.com/problems/rank-scores/description/) `DENSE_RANK()`
 
-SELECT score, DENSE_RANK() OVER (ORDER BY score DESC) AS 'rank'
-FROM scores
+SELECT score, DENSE_RANK() OVER (ORDER BY score DESC) AS 'rank'  
+FROM scores  
 
 - 🔗 [Solvesql - 다음날도 서울숲의 미세먼지 농도는 나쁨 😢](https://solvesql.com/problems/bad-finedust-measure/) `LEAD()`
 
-SELECT *
-FROM (
-  SELECT 
-    measured_at AS today, 
-    LEAD(measured_at, 1) OVER(ORDER BY measured_at) AS next_day, 
-    pm10, 
-    LEAD(pm10, 1) OVER(ORDER BY measured_at) AS next_pm10
-  FROM measurements
-) AS sub
+SELECT *  
+FROM (  
+  SELECT   
+    measured_at AS today,   
+    LEAD(measured_at, 1) OVER(ORDER BY measured_at) AS next_day,   
+    pm10,   
+    LEAD(pm10, 1) OVER(ORDER BY measured_at) AS next_pm10  
+  FROM measurements  
+) AS sub  
 WHERE next_pm10 > pm10
 
 - 🔗 [programmers - 그룹별 조건에 맞는 식당 목록 출력하기](https://school.programmers.co.kr/learn/courses/30/lessons/131124) (도전!!)
-WITH 
-join_table AS (
-    SELECT member_name, review_text, review_date
-    FROM rest_review rr
-    JOIN member_profile mp ON rr.member_id = mp.member_id
-),
-ranked AS (
-  SELECT 
-    member_name,
-    DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS rk
-  FROM join_table
-  GROUP BY member_name
-)
+WITH   
+join_table AS (  
+    SELECT member_name, review_text, review_date  
+    FROM rest_review rr  
+    JOIN member_profile mp ON rr.member_id = mp.member_id  
+),  
+ranked AS (  
+  SELECT   
+    member_name,  
+    DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS rk  
+  FROM join_table  
+  GROUP BY member_name  
+)  
 
-SELECT 
-    j.member_name, 
-    j.review_text, 
-    DATE_FORMAT(j.review_date, '%Y-%m-%d') AS review_date
-FROM join_table j
-    JOIN ranked r ON j.member_name = r.member_name
-WHERE r.rk = 1
+SELECT   
+    j.member_name,   
+    j.review_text,   
+    DATE_FORMAT(j.review_date, '%Y-%m-%d') AS review_date  
+FROM join_table j  
+    JOIN ranked r ON j.member_name = r.member_name  
+WHERE r.rk = 1  
 ORDER BY review_date, review_text
