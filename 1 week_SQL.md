@@ -61,13 +61,14 @@ ex 허용되지 않는 경우: WINDOW w1 AS (w2), w2 AS (w3), w3 AS (w1)
 
 -이전 행과의 차이 또는 합을 계산하기 위해 자주 사용된다.  
 ex)  
+```sql
 SELECT   
   val,   
   LAG(val) OVER w AS 'lag',  
   val - LAG(val) OVER w AS 'lag diff'  
 FROM numbers  
 WINDOW w AS (ORDER BY t);  
-
+```
 5) NTILE(N)  
 : 파티션을 N개의 그룹으로 나눈후 각 행을 각 그룹에 배치하여 현재 행이 속한 그룹의 숫자를 반환한다.  
 -ORDER BY와 함께 사용되어야 한다.
@@ -82,9 +83,11 @@ WINDOW w AS (ORDER BY t);
 -수치형 데이터에 대해 분산과 표준편차 함수는 DOUBLE 자료형을 반환한다.  
 -수치형 데이터에 대해 SUM, AVG 함수는 DECIMAL 자료형을 반환한다.  
 -SUM, AVG 함수는 날짜/시간 자료형 변수에 작동하지 않는다. 이를 해결하기 위해, 수치 단위로 변환한 후 사용한다.  
-ex)  
+ex)
+```sql
 SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(time_col))) FROM tbl_name;  
 SELECT FROM_DAYS(SUM(TO_DAYS(date_col))) FROM tbl_name;
+```
 
 집계함수 목록  
 AVG([DISTINCT] expr)  
@@ -114,12 +117,14 @@ JSON OBJECTAGG(key_col, value_col): 두 열의 값들을 하나의 쌍으로 묶
 # 2. 문제 풀이
 
 - 🔗 [LeetCode - Rank Scores](https://leetcode.com/problems/rank-scores/description/) `DENSE_RANK()`
-
+```sql
 SELECT score, DENSE_RANK() OVER (ORDER BY score DESC) AS 'rank'  
-FROM scores  
+FROM scores;
+```
 
 - 🔗 [Solvesql - 다음날도 서울숲의 미세먼지 농도는 나쁨 😢](https://solvesql.com/problems/bad-finedust-measure/) `LEAD()`
 
+```sql
 SELECT *  
 FROM (  
     SELECT   
@@ -130,8 +135,10 @@ FROM (
     FROM measurements  
 ) AS sub  
 WHERE next_pm10 > pm10
+```
 
 - 🔗 [programmers - 그룹별 조건에 맞는 식당 목록 출력하기](https://school.programmers.co.kr/learn/courses/30/lessons/131124) (도전!!)
+```sql
 WITH   
 join_table AS (  
     SELECT member_name, review_text, review_date  
@@ -154,3 +161,4 @@ FROM join_table j
     JOIN ranked r ON j.member_name = r.member_name  
 WHERE r.rk = 1  
 ORDER BY review_date, review_text
+```
