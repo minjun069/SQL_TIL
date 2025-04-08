@@ -242,4 +242,20 @@ str1이 str2보다 큼 → > 0   (내부 구현에 따라 양수가 나옴)
 ### **1️⃣ 📝문제 풀이**
 
 - 🔗 [HackerRank - 삼각형 종류 분류하기](https://www.hackerrank.com/challenges/what-type-of-triangle/problem) `CASE문`
+```sql
+SELECT CASE 
+    WHEN A = B AND B = C THEN 'Equilateral'
+    WHEN A + B <= C OR A + C <= B OR C + B <= A THEN 'Not A Triangle'
+    WHEN A = B OR B = C OR C = A THEN 'Isosceles'
+    ELSE 'Scalene'
+END
+ 
+FROM TRIANGLES
+```
+
 - 🔗 [LeetCode - find-customer-referee](https://leetcode.com/problems/find-customer-referee/description/) `IS NULL`
+```sql
+SELECT name
+FROM Customer
+WHERE referee_id != 2 or referee_id IS NULL
+```
