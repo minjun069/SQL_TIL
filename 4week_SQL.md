@@ -98,51 +98,51 @@ WITH 절은 CTE 중 하나라도 자신을 참조하는 경우 반드시 WITH RE
 
 재귀 CTE의 하위 쿼리 구조는 다음과 같다:
 
-SELECT ... — 초기 행 집합을 반환
-UNION ALL
+SELECT ... — 초기 행 집합을 반환  
+UNION ALL  
 SELECT ... — 추가 행 집합을 반환 (자기 자신을 참조하여 재귀)
 
 
-첫 번째 SELECT는 초기 행을 반환하며 CTE 이름을 참조하지 않는다.
+첫 번째 SELECT는 초기 행을 반환하며 CTE 이름을 참조하지 않는다.  
 두 번째 SELECT는 CTE 이름을 FROM 절에서 참조하여 추가 행을 생성하며, 더 이상 새 행이 생성되지 않으면 재귀가 종료된다.
 
 재귀 SELECT의 각 반복은 이전 반복에서 생성된 행만을 대상으로 동작한다.
 
-CTE 결과 열의 데이터 타입은 비재귀 SELECT 부분의 열 타입에서 유추되며, 모든 열은 NULL 허용이다.
+CTE 결과 열의 데이터 타입은 비재귀 SELECT 부분의 열 타입에서 유추되며, 모든 열은 NULL 허용이다.  
 타입 결정 시 재귀 SELECT는 무시된다.
 
 UNION DISTINCT를 사용할 경우 중복 행이 제거된다. 이는 무한 루프를 방지하는 데 유용하다.
 
-재귀 SELECT가 비재귀 SELECT보다 넓은 열 값을 생성할 경우,
+재귀 SELECT가 비재귀 SELECT보다 넓은 열 값을 생성할 경우,  
 비재귀 SELECT에서 열 너비를 넓혀야 데이터 잘림(truncation) 을 방지할 수 있다.
 
-ex)
-열 넓이가 고정되어 결과가 모두 'abc'로 고정됨.
+ex)  
+열 넓이가 고정되어 결과가 모두 'abc'로 고정됨.  
 ```sql
   SELECT 1 AS n, 'abc' AS str
   UNION ALL
   SELECT n + 1, CONCAT(str, str) FROM cte WHERE n < 3
 ```
 
-문자열이 적절히 확장 가능
+문자열이 적절히 확장 가능  
 ```sql
   SELECT 1 AS n, CAST('abc' AS CHAR(20)) AS str
   UNION ALL
   SELECT n + 1, CONCAT(str, str) FROM cte WHERE n < 3
 ```
 
-재귀 SELECT 부분에는 다음과 같은 요소를 사용할 수 없다
+재귀 SELECT 부분에는 다음과 같은 요소를 사용할 수 없다  
 : 집계 함수 / 윈도우 함수 / GROUP BY / ORDER BY / DISTINCT
 
-재귀 SELECT는 CTE를 오직 한 번만, 오직 FROM 절에서만 참조해야 한다.
+재귀 SELECT는 CTE를 오직 한 번만, 오직 FROM 절에서만 참조해야 한다.  
 다른 테이블과 JOIN은 가능하지만, LEFT JOIN의 우측에 CTE가 위치할 수는 없다.
 
 
-<최적화 및 성능 관련 사항>
-재귀 SELECT는 EXPLAIN 실행 계획의 Extra 열에 Recursive로 표시된다.
-EXPLAIN의 비용(cost) 정보는 반복 1회당 비용이며, 전체 반복 수는 예측할 수 없다.
-결과 행 수가 많으면, CTE 결과를 저장하는 임시 테이블이 메모리에서 디스크로 이동할 수 있으며, 
-이 경우 성능 저하가 발생할 수 있다.
+<최적화 및 성능 관련 사항>  
+재귀 SELECT는 EXPLAIN 실행 계획의 Extra 열에 Recursive로 표시된다.  
+EXPLAIN의 비용(cost) 정보는 반복 1회당 비용이며, 전체 반복 수는 예측할 수 없다.  
+결과 행 수가 많으면, CTE 결과를 저장하는 임시 테이블이 메모리에서 디스크로 이동할 수 있으며,   
+이 경우 성능 저하가 발생할 수 있다.  
 이 경우 max_heap_table_size 또는 tmp_table_size 값을 조정하면 성능 향상에 도움이 될 수 있다.
 
 
